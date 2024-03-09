@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "google-auth-library": "^9.6.3",
+    "googleapis": "^133.0.0",
+    "http": "^0.0.1-security",
+    "node-persist": "^4.0.1",
+    "open": "^10.1.0",
+    "promises": "^0.2.5",
+    "url": "^0.11.3"
+  },
+  "name": "js-zoom",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module"
+}
