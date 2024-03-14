@@ -71,7 +71,7 @@ async function retrieveAndProcessEvents() {
         const startTime = new Date(event.start.dateTime);
         const timeUntilMeeting = startTime - new Date();
 
-        if (timeUntilMeeting > 0 && meetingUrl) {
+        if (timeUntilMeeting > 0) {
           let meetingUrl = event.conferenceData.entryPoints[0].uri;
 
           if (!meetingUrl) {
