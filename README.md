@@ -48,3 +48,5 @@ Please note that the server will only be restarted if your laptop/desktop is run
 
 TODO:
 Listen on Google calendar to schedule new meetings after the server started
+
+***You are welcome to open PRs to improve this tool***
