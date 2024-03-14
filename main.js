@@ -72,14 +72,12 @@ async function retrieveAndProcessEvents() {
         const timeUntilMeeting = startTime - new Date();
 
         if (timeUntilMeeting > 0) {
-          let meetingUrl = event.conferenceData.entryPoints[0].uri;
-
-          if (!meetingUrl) {
-            meetingUrl = extractZoomUrl(event.description);
+          const cd = event.conferenceData;
+          let meetingUrl = cd ? cd.entryPoints[0].uri : extractZoomUrl(event.description);
+          if (meetingUrl) {
+            scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings);
+            scheduledMeeting++;
           }
-
-          scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings);
-          scheduledMeeting++;
         }
         openedMeetings++
       });
