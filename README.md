@@ -1,3 +1,7 @@
+## Smart Meeting Joiner:
+
+This Node.js script retrieves upcoming events from the user's Google Calendar and automatically joins the corresponding Zoom meetings at the scheduled times. It utilizes the Google Calendar API to fetch events for the current day and extracts the Zoom meeting URLs from the event details. The script schedules each meeting and opens the Zoom meeting URL at the appropriate time.
+
 ## Set up
 
 ### Step 1: Set up Google Calendar API
