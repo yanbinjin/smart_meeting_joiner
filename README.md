@@ -35,3 +35,7 @@ pm2 start -f /path/to/smart_meeting_joiner/pm2.config.cjs
 This command will start the server using PM2, a process manager for Node.js applications. The server will be restarted automatically at the time specified in the pm2.config.cjs file. The current restart time is set to 9 am, which is configured using the cron_restart: '0 9 * * *' option in the configuration file.
 
 Please note that the server will only be restarted if your laptop/desktop is running at the specified time. Additionally, with current setting, this command in .zsh file will be kill and restart the server whenever you open a new terminal tab.
+
+
+TODO:
+Listen on Google calendar to schedule new meetings after the server started
