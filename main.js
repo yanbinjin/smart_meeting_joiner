@@ -4,7 +4,6 @@ import http from 'http';
 import url from 'url';
 import { exec } from 'child_process';
 import fs from 'fs/promises';
-
     
 import config from './config.js';
 
@@ -43,17 +42,14 @@ async function handleOAuth2Callback(req, res) {
 }
 
 async function retrieveAndProcessEvents() {
-    // Create a Google Calendar API client
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Get tomorrow's date
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    // Retrieve upcoming events
     calendar.events.list({
       calendarId: 'primary',
       timeMin: today.toISOString(),
@@ -74,10 +70,14 @@ async function retrieveAndProcessEvents() {
       events.forEach(event => {
         const startTime = new Date(event.start.dateTime);
         const timeUntilMeeting = startTime - new Date();
-        const meetingUrl = extractZoomUrl(event.description);
 
         if (timeUntilMeeting > 0 && meetingUrl) {
-          console.log(`Scheduling to join meeting: ${event.summary}`);
+          let meetingUrl = event.conferenceData.entryPoints[0].uri;
+
+          if (!meetingUrl) {
+            meetingUrl = extractZoomUrl(event.description);
+          }
+
           scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings);
           scheduledMeeting++;
         }
@@ -132,7 +132,6 @@ function extractZoomUrl(description) {
   return match ? match[0] : null;
 }
 
-// Create a simple HTTP server to handle the OAuth2 callback
 const server = http.createServer(async (req, res) => {
   if (req.url.startsWith('/oauth2callback')) {
     await handleOAuth2Callback(req, res);
@@ -142,15 +141,12 @@ const server = http.createServer(async (req, res) => {
 server.listen(3000, async () => {
   console.log('Server is running on http://localhost:3000');
 
-  // Check if a token is already stored
   const storedToken = await getStoredToken();
   if (storedToken) {
-    // Use the stored token
     oauth2Client.setCredentials(storedToken);
     console.log('Using stored token');
     await retrieveAndProcessEvents();
   } else {
-    // Generate the authorization URL and open it in the default browser
     const authUrl = oauth2Client.generateAuthUrl({
       access_type: 'offline',
       scope: ['https://www.googleapis.com/auth/calendar.readonly'],

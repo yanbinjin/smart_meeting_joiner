@@ -9,7 +9,7 @@
     "promises": "^0.2.5",
     "url": "^0.11.3"
   },
-  "name": "js-zoom",
+  "name": "smart_meeting_joiner",
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
@@ -18,6 +18,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "SmartMeetingJoiner",
   "type": "module"
 }
