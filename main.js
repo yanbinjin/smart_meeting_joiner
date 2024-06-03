@@ -28,7 +28,7 @@ async function storeToken(token) {
 }
 
 async function handleOAuth2Callback(req, res) {
-  const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
+  const qs = new url.URL(req.url, 'http://localhost:3100').searchParams;
   const code = qs.get('code');
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
@@ -70,14 +70,11 @@ async function retrieveAndProcessEvents() {
       events.forEach(event => {
         const startTime = new Date(event.start.dateTime);
         const timeUntilMeeting = startTime - new Date();
-
-        if (timeUntilMeeting > 0) {
-          const cd = event.conferenceData;
-          let meetingUrl = cd ? cd.entryPoints[0].uri : extractZoomUrl(event.description);
-          if (meetingUrl) {
-            scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings);
-            scheduledMeeting++;
-          }
+        const cd = event.conferenceData;
+        const meetingUrl = cd ? cd.entryPoints[0].uri : extractZoomUrl(event.description);
+        if (timeUntilMeeting > 0 && meetingUrl && event.attendees && event.attendees) {
+          scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings, event);
+          scheduledMeeting++;
         }
         openedMeetings++
       });
@@ -97,7 +94,8 @@ async function retrieveAndProcessEvents() {
     });
 }
 
-function scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings) {
+function scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings, event) {
+  console.log(`Scheduled meeting ${event.summary}`)
   setTimeout(() => {
     exec(`open "${meetingUrl}"`, (error, stdout, stderr) => {
       if (error) {
@@ -136,13 +134,12 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(3000, async () => {
-  console.log('Server is running on http://localhost:3000');
+server.listen(3009, async () => {
+  console.log('Server is running on http://localhost:3009');
 
   const storedToken = await getStoredToken();
   if (storedToken) {
     oauth2Client.setCredentials(storedToken);
-    console.log('Using stored token');
     await retrieveAndProcessEvents();
   } else {
     const authUrl = oauth2Client.generateAuthUrl({
