@@ -72,8 +72,8 @@ async function retrieveAndProcessEvents() {
         const timeUntilMeeting = startTime - new Date();
         const cd = event.conferenceData;
         const meetingUrl = cd ? cd.entryPoints[0].uri : extractZoomUrl(event.description);
-        if (timeUntilMeeting > 0 && meetingUrl && event.attendees && event.attendees) {
-          scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings, event);
+        if (timeUntilMeeting > 0 && meetingUrl) {
+          scheduleMeeting(startTime, timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings, event);
           scheduledMeeting++;
         }
         openedMeetings++
@@ -87,15 +87,13 @@ async function retrieveAndProcessEvents() {
         console.log('║                                                 ║');
         console.log('╚═════════════════════════════════════════════════╝');
         console.log('\x1b[0m');
-        server.close();
       } else {
         console.log(`scheduled ${scheduledMeeting} meeetings`)
       }
     });
 }
 
-function scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings, event) {
-  console.log(`Scheduled meeting ${event.summary}`)
+function scheduleMeeting(startTime, timeUntilMeeting, meetingUrl, openedMeetings, totalMeetings, event) {
   setTimeout(() => {
     exec(`open "${meetingUrl}"`, (error, stdout, stderr) => {
       if (error) {
@@ -103,8 +101,8 @@ function scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeet
         return;
       }
       openedMeetings++;
-      console.log('Zoom meeting joined successfully');
-      if (openedMeetings === totalMeetings) {
+      console.log(`${event.summary} meeting joined successfully`);
+      if (openedMeetings === totalMeetings && process.env.ALLOW_EXIT === 'true') {
             console.log('\x1b[32m\x1b[1m');
             console.log('╔═════════════════════════════════════════════════╗');
             console.log('║                                                 ║');
@@ -113,10 +111,10 @@ function scheduleMeeting(timeUntilMeeting, meetingUrl, openedMeetings, totalMeet
             console.log('╚═════════════════════════════════════════════════╝');
             console.log('\x1b[0m');
             server.close();
-        server.close();
       }
     });
   }, timeUntilMeeting);
+  console.log(`Scheduled meeting ${event.summary} at ${startTime}`)
 }
 
 function extractZoomUrl(description) {
